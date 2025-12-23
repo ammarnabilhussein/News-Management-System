@@ -52,7 +52,7 @@ class categories
 };
 
 
-class most_recent
+class most_recent // stack to be used for arranging the articles based on date by a fn
 {
     public: 
         int size;
@@ -60,9 +60,9 @@ class most_recent
         most_recent();
         ~most_recent();
         void push(article);
-        bool isempty();
-        article* top();
         void pop();
+        article* top();
+        bool isempty();
         void clear();
 };
 
