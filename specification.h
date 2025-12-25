@@ -70,9 +70,6 @@ class ratingOrder // queue to be used for arranging the articles base on rating 
     public:
         int size;
         article* head, *tail;
-
-        ratingOrder();
-        ~ratingOrder();
         void enqueue(article*);
         article dequeue();
         bool isEmpty();
