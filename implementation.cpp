@@ -75,10 +75,10 @@ void newsCategory ::addToTail(article* toAdd){
     numberOfArticles++;
 }
 
-void newsCategory ::removeFromHead(){
+bool newsCategory ::removeFromHead(){
     if (isEmpty())
     {
-        return;
+        return false;
     }
     if (head == tail)
     {
@@ -90,13 +90,13 @@ void newsCategory ::removeFromHead(){
         delete toDelete;
     }
     numberOfArticles--;
-    
+    return true;
 }
 
-void newsCategory ::removeFromTail(){
+bool newsCategory ::removeFromTail(){
     if (isEmpty())
     {
-        return;
+        return false;
     }
     if (head == tail)
     {
@@ -115,12 +115,13 @@ void newsCategory ::removeFromTail(){
         tail ->next = nullptr;
     }
     numberOfArticles--;
+    return true;
 }
 
-void newsCategory ::removefromMid(article* toAdd, int id){
+bool newsCategory ::removefromMid(int id){
     if (isEmpty())
     {
-        return;
+        return false;
     }
     if (head ->id == id)
     {
@@ -139,11 +140,12 @@ void newsCategory ::removefromMid(article* toAdd, int id){
         }
         if (toDelete == nullptr)
         {
-            return;
+            return false;
         }
         previous ->next = toDelete ->next;
         delete toDelete;
         numberOfArticles--;
+        return true;
     }
     
 }
@@ -324,6 +326,70 @@ string user :: getType()
     return type;
 }
 
+void user ::displayCategoryNews(string categoryName, categories* news){
+    newsCategory* temp = news ->head;
+    while (temp != nullptr)
+    {
+        if (categoryName == temp ->categoryName)
+        {
+            break;
+        }
+        temp = temp ->next;
+    }
+    if (temp != nullptr)
+    {
+        article* toDisplay = temp ->head;
+        while (toDisplay != nullptr)
+        {
+            cout << "\t\t\t\t" << toDisplay ->title << endl
+            << "\t\t\t\t" << toDisplay ->description << endl
+            << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" << endl
+            << "--------------------------------------------------" << endl;
+            bookmark(toDisplay);
+            toDisplay = toDisplay ->next;
+        }
+        
+    }else{
+        cout << "No such category found." << endl;
+    }
+    
+}
+
+void user ::bookmark(article* articleToBookmark){
+    char choice;
+    if (bookmarkedHead == nullptr)
+    {
+        cout << "Do you want to bookmark this article? (y / n): ";
+        cin >> choice;
+        if (choice == 'y')
+        {
+            bookmarkedHead = articleToBookmark;
+            bookmarkedTail = articleToBookmark;
+            cout << "Article bookmarked successfully." << endl;
+        }
+        
+    }else{
+        article* temp = bookmarkedHead;
+        while (temp != nullptr){
+            if (temp ->id == articleToBookmark ->id)
+            {
+                cout << "Article already bookmarked." << endl;
+                return;
+            }
+            temp = temp ->next;
+        }
+        cout << "Do you want to bookmark this article? (y / n): ";
+        cin >> choice;
+        if (choice == 'y')
+        {
+            bookmarkedTail ->next = articleToBookmark;
+            bookmarkedTail = articleToBookmark;
+            cout << "Article bookmarked successfully." << endl;    
+        }
+        
+    }
+}
+
 admin :: admin()
 {
     idsCounter = 0;
@@ -339,7 +405,62 @@ int admin :: idGenerator()
     return ++idsCounter;
 }
 
+void admin ::addArticle(categories* news, mostRecent* recentNews, ratingOrder* ratedNews)
+{
+    string title, category, description, author;
+    int publish_month, publish_day, id;
+    cout << "Enter article title: ";
+    getline(cin, title);
+    cout << "Enter article category: ";
+    getline(cin, category);
+    cout << "Enter article description: ";
+    getline(cin, description);
+    cout << "Enter article author: ";
+    getline(cin, author);
+    cout << "Enter publish month and day: ";
+    cin >> publish_month >> publish_day;
 
+    article* newArticle = new article(title, category, description, author, publish_month, publish_day, 0, idGenerator());
+    newsCategory* temp = news ->head;
+    while (temp != nullptr)
+    {
+        if (newArticle ->category == temp ->categoryName)
+        {
+            break;
+        }
+        temp = temp ->next;
+        
+    }
+    if (temp == nullptr)
+    {
+        newsCategory* newcat = addCategory();
+        newcat ->addToTail(newArticle);
+    }else{
+        temp ->addToTail(newArticle);
+    }
+    // Adding to most recent stack
+    // Adding to rating order queue
+
+}
+
+void admin ::removeArticle(int id,categories* news){
+    newsCategory* currentCat = news ->head;
+    while (currentCat != nullptr)
+    {
+        if (currentCat ->removefromMid(id))
+        {
+            break;
+        }
+        currentCat = currentCat ->next;
+    }
+    if (currentCat == nullptr)
+    {
+        cout << "Article not found " << endl;
+    } else{
+        cout << "Article removed successfully." << endl;
+    }
+
+}
 
 
 

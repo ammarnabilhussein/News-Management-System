@@ -13,6 +13,14 @@ struct article
 
     article();
     article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, article* next = nullptr);
+    void setTitle(string title);
+    void setCategory(string category);
+    void setDescription(string description);
+    void setAuthor(string author);
+    void setPublishMonth(int month);
+    void setPublishDay(int day);
+    void setRating(int rate);
+    void setId(int id);
 
 };
 
@@ -29,9 +37,9 @@ class newsCategory
         ~newsCategory();
         void addToHead(article*);
         void addToTail(article*);
-        void removeFromHead();
-        void removeFromTail();
-        void removefromMid(article*,int);
+        bool removeFromHead();
+        bool removeFromTail();
+        bool removefromMid(int);
         bool isEmpty();
 
 };
@@ -98,11 +106,11 @@ class user
         article* searchByTitle(string title);
         article* searchByDate(int date);
         article* searchByKeywords(string words);
-        void displayCategoryNews(string categoryName, categories* news);
+        void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews();
-        void rateNews(int rate, article* news);
-        void bookmark(article* news);
+        void rateNews(int rate, article* articleToRate);
+        void bookmark(article* articleToBookmark);
 
 };
 
@@ -115,11 +123,11 @@ class admin : public user
         admin();
         admin(string userName, string password, string type, user* next, user* prev);
 
-        int idGenerator(); 
-        void addArticle();
-        void removeArticle(int id);
+        int idGenerator();
+        void addArticle(categories* news, mostRecent* recentNews, ratingOrder* ratedNews);
+        void removeArticle(int id,categories* news);
         void updateExisting(int id);
-        void addCategory(); // Use this when doing my function youssef
+        newsCategory* addCategory(); // Use this when doing my function youssef
         void displayAvgRateForCat(string categoryName, categories* news);
 
 };
