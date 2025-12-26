@@ -13,14 +13,6 @@ struct article
 
     article();
     article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, article* next = nullptr);
-    void setTitle(string title);
-    void setCategory(string category);
-    void setDescription(string description);
-    void setAuthor(string author);
-    void setPublishMonth(int month);
-    void setPublishDay(int day);
-    void setRating(int rate);
-    void setId(int id);
 
 };
 
