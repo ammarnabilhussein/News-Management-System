@@ -13,6 +13,14 @@ struct article
 
     article();
     article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, article* next = nullptr);
+    void setTitle(string title);
+    void setCategory(string category);
+    void setDescription(string description);
+    void setAuthor(string author);
+    void setPublishMonth(int month);
+    void setPublishDay(int day);
+    void setRating(int rate);
+    void setId(int id);
 
 };
 
@@ -29,9 +37,9 @@ class newsCategory
         ~newsCategory();
         void addToHead(article*);
         void addToTail(article*);
-        void removeFromHead();
-        void removeFromTail();
-        void removefromMid(article*,int);
+        bool removeFromHead();
+        bool removeFromTail();
+        bool removefromMid(int);
         bool isEmpty();
 
 };
@@ -51,7 +59,7 @@ class categories
 };
 
 
-class mostRecent // stack to be used for arranging the articles based on date by a fn
+class mostRecent // stack to be used for arranging the articles based on date by addArticle
 {
     public: 
         int size;
@@ -64,20 +72,6 @@ class mostRecent // stack to be used for arranging the articles based on date by
         article* top();
         bool isEmpty();
 };
-
-class ratingOrder // queue to be used for arranging the articles base on rating by a fn
-{
-    public:
-        int size;
-        article* head, *tail;
-
-        ratingOrder();
-        ~ratingOrder();
-        void enqueue(article*);
-        article dequeue();
-        bool isEmpty();
-};
-
 
 class user
 {
@@ -98,11 +92,11 @@ class user
         article* searchByTitle(string title);
         article* searchByDate(int date);
         article* searchByKeywords(string words);
-        void displayCategoryNews(string categoryName, categories* news);
+        void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews();
-        void rateNews(int rate, article* news);
-        void bookmark(article* news);
+        void rateNews(article* articleToRate);
+        void bookmark(article* articleToBookmark);
 
 };
 
@@ -115,11 +109,11 @@ class admin : public user
         admin();
         admin(string userName, string password, string type, user* next, user* prev);
 
-        int idGenerator(); 
-        void addArticle();
-        void removeArticle(int id);
+        int idGenerator();
+        void addArticle(categories* news, mostRecent* recentNews, newsCategory* ratedNews);
+        void removeArticle(int id,categories* news, mostRecent* recentNews, newsCategory* ratedNews);
         void updateExisting(int id);
-        void addCategory(); // Use this when doing my function youssef
+        newsCategory* addCategory(); // Use this when doing my function youssef
         void displayAvgRateForCat(string categoryName, categories* news);
 
 };
