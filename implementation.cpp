@@ -306,6 +306,7 @@ void user ::displayCategoryNews(string categoryName, categories* news){
             << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" << endl
             << "--------------------------------------------------" << endl;
             bookmark(toDisplay);
+            rateNews(toDisplay);
             toDisplay = toDisplay ->next;
         }
         
