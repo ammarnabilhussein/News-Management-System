@@ -59,7 +59,7 @@ class categories
 };
 
 
-class mostRecent // stack to be used for arranging the articles based on date by a fn
+class mostRecent // stack to be used for arranging the articles based on date by addArticle
 {
     public: 
         int size;
@@ -72,20 +72,6 @@ class mostRecent // stack to be used for arranging the articles based on date by
         article* top();
         bool isEmpty();
 };
-
-class ratingOrder // queue to be used for arranging the articles base on rating by a fn
-{
-    public:
-        int size;
-        article* head, *tail;
-
-        ratingOrder();
-        ~ratingOrder();
-        void enqueue(article*);
-        article dequeue();
-        bool isEmpty();
-};
-
 
 class user
 {
@@ -124,7 +110,7 @@ class admin : public user
         admin(string userName, string password, string type, user* next, user* prev);
 
         int idGenerator();
-        void addArticle(categories* news, mostRecent* recentNews, ratingOrder* ratedNews);
+        void addArticle(categories* news, mostRecent* recentNews, newsCategory* ratedNews);
         void removeArticle(int id,categories* news);
         void updateExisting(int id);
         newsCategory* addCategory(); // Use this when doing my function youssef

@@ -253,46 +253,6 @@ bool mostRecent ::isEmpty(){
     return size == 0;
 }
 
-ratingOrder ::ratingOrder(){
-    size = 0;
-    head = tail = nullptr;
-}
-
-ratingOrder ::~ratingOrder(){
-    while (!isEmpty())
-    {
-        dequeue();
-    }
-    
-}
-
-void ratingOrder ::enqueue(article* toAdd){
-    if (isEmpty())
-    {
-        head = tail = toAdd;
-    }else{
-        tail ->next = toAdd;
-        tail = toAdd;
-    }
-    size++;
-}
-
-article ratingOrder ::dequeue(){
-    if (isEmpty())
-    {
-        return;
-    }
-    article* toDelete = head;
-    head = head ->next;
-    article toReturn = *toDelete;
-    size--;
-    return toReturn;
-}
-
-bool ratingOrder ::isEmpty(){
-    return size == 0;
-}
-
 user ::user()
 {
     userName = "";
@@ -405,7 +365,7 @@ int admin :: idGenerator()
     return ++idsCounter;
 }
 
-void admin ::addArticle(categories* news, mostRecent* recentNews, ratingOrder* ratedNews)
+void admin ::addArticle(categories* news, mostRecent* recentNews, newsCategory* ratedNews)
 {
     string title, category, description, author;
     int publish_month, publish_day, id;
@@ -438,9 +398,35 @@ void admin ::addArticle(categories* news, mostRecent* recentNews, ratingOrder* r
     }else{
         temp ->addToTail(newArticle);
     }
-    // Adding to most recent stack
-    // Adding to rating order queue
+    
+    mostRecent *storeMoreRecent;
+    while (!recentNews ->isEmpty())
+    {
+        article *current = recentNews ->top();
+        if (newArticle ->publish_month < current ->publish_month)
+        {
+            recentNews ->push(newArticle);
+            break;
+        }else if(newArticle ->publish_month == current ->publish_month){
+            if (newArticle ->publish_day <= current ->publish_day)
+            {
+                recentNews ->push(newArticle);
+                break;
+            }
+        
+        }
+        storeMoreRecent ->push(recentNews ->top());
+        recentNews ->pop();
+    }
+    
+    while (!storeMoreRecent ->isEmpty())
+    {
+        recentNews ->push(storeMoreRecent ->top());
+        storeMoreRecent ->pop();
+    }
 
+    
+    
 }
 
 void admin ::removeArticle(int id,categories* news){

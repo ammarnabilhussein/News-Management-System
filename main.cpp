@@ -8,7 +8,7 @@ int main()
 {   
     categories news;
     mostRecent recentNews;
-    ratingOrder ratedNews;
+    newsCategory ratedNews;
     
     // copilot wrote this part , delete so we don't get fucked
     
