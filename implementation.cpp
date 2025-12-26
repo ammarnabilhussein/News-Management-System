@@ -287,6 +287,46 @@ string user :: getType()
     return type;
 }
 
+article* user::searchByTitle(string title, categories* news)
+{
+    newsCategory* cat = news->head;
+
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+        while (temp != nullptr)
+        {
+            if (temp->title == title)
+                return temp;
+
+            temp = temp->next;
+        }
+        cat = cat->next;
+    }
+    return nullptr;
+}
+
+article* user::searchByKeywords(string words, categories* news)
+{
+    newsCategory* cat = news->head;
+
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+        while (temp != nullptr)
+        {
+            if (temp->title.find(words) != string::npos ||
+                temp->description.find(words) != string::npos)
+            {
+                return temp;
+            }
+            temp = temp->next;
+        }
+        cat = cat->next;
+    }
+    return nullptr;
+}
+
 void user ::displayCategoryNews(string categoryName, categories* news){
     newsCategory* temp = news ->head;
     while (temp != nullptr)
@@ -492,46 +532,7 @@ void admin ::removeArticle(int id,categories* news, mostRecent* recentNews, news
     cout << "Article removed successfully." << endl;
 
 }
-// ziad's part
-article* user::searchByTitle(string title, categories* news)
-{
-    newsCategory* cat = news->head;
 
-    while (cat != nullptr)
-    {
-        article* temp = cat->head;
-        while (temp != nullptr)
-        {
-            if (temp->title == title)
-                return temp;
-
-            temp = temp->next;
-        }
-        cat = cat->next;
-    }
-    return nullptr;
-}
-
-article* user::searchByKeywords(string words, categories* news)
-{
-    newsCategory* cat = news->head;
-
-    while (cat != nullptr)
-    {
-        article* temp = cat->head;
-        while (temp != nullptr)
-        {
-            if (temp->title.find(words) != string::npos ||
-                temp->description.find(words) != string::npos)
-            {
-                return temp;
-            }
-            temp = temp->next;
-        }
-        cat = cat->next;
-    }
-    return nullptr;
-}
 
 void admin::updateExisting(int id, categories* news)
 {

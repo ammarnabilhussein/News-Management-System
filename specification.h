@@ -89,9 +89,9 @@ class user
         string getType();
         string getUserName();
         string getPassword();
-        article* searchByTitle(string title);
-        article* searchByDate(int date);
-        article* searchByKeywords(string words);
+        article* searchByTitle(string title,categories* news);
+        article* searchByDate(int date,categories* news);
+        article* searchByKeywords(string words,categories* news);
         void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews();
@@ -112,7 +112,7 @@ class admin : public user
         int idGenerator();
         void addArticle(categories* news, mostRecent* recentNews, newsCategory* ratedNews);
         void removeArticle(int id,categories* news, mostRecent* recentNews, newsCategory* ratedNews);
-        void updateExisting(int id);
+        void updateExisting(int id,categories* news);
         newsCategory* addCategory(); // Use this when doing my function youssef
         void displayAvgRateForCat(string categoryName, categories* news);
 
