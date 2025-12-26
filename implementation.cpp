@@ -1,5 +1,6 @@
 #include <iostream>
 #include "specification.h"
+#include<string>
 using namespace std;
 
 // article implementation
@@ -339,11 +340,81 @@ int admin :: idGenerator()
     return ++idsCounter;
 }
 
+// ziad's part
+article* user::searchByTitle(string title, categories* news)
+{
+    newsCategory* cat = news->head;
 
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+        while (temp != nullptr)
+        {
+            if (temp->title == title)
+                return temp;
 
+            temp = temp->next;
+        }
+        cat = cat->next;
+    }
+    return nullptr;
+}
 
+article* user::searchByKeywords(string words, categories* news)
+{
+    newsCategory* cat = news->head;
 
-// 555555
-// it's so lonely here
-// it's so quiet
-// it's so over
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+        while (temp != nullptr)
+        {
+            if (temp->title.find(words) != string::npos ||
+                temp->description.find(words) != string::npos)
+            {
+                return temp;
+            }
+            temp = temp->next;
+        }
+        cat = cat->next;
+    }
+    return nullptr;
+}
+
+void admin::updateExisting(int id, categories* news)
+{
+    newsCategory* cat = news->head;
+
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+        while (temp != nullptr)
+        {
+            if (temp->id == id)
+            {
+                cout << "Updating Article ID " << id << endl;
+
+                cout << "New title: ";
+                cin.ignore();
+                getline(cin, temp->title);
+
+                cout << "New description: ";
+                getline(cin, temp->description);
+
+                cout << "New author: ";
+                getline(cin, temp->author);
+
+                cout << "New rating: ";
+                cin >> temp->rating;
+
+                cout << "Article updated successfully.\n";
+                return;
+            }
+            temp = temp->next;
+        }
+        cat = cat->next;
+    }
+
+    cout << "Article not found.\n";
+}
+
