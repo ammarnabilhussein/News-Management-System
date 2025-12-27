@@ -290,19 +290,38 @@ string user :: getType()
 article* user::searchByTitle(string title, categories* news)
 {
     newsCategory* cat = news->head;
-
+    
     while (cat != nullptr)
     {
         article* temp = cat->head;
         while (temp != nullptr)
         {
             if (temp->title == title)
-                return temp;
-
+            return temp;
+            
             temp = temp->next;
         }
         cat = cat->next;
     }
+    return nullptr;
+}
+
+article* user ::searchByDate(mostRecent* allNews, int month, int day)
+{
+    // Copying the stack so the original is not changed
+    mostRecent temp = *allNews;
+
+    while (!temp.isEmpty())
+    {
+        article* currentArticle = temp.top();
+        temp.pop();
+
+        if (currentArticle->publish_month == month && currentArticle->publish_day == day)
+        {
+            return currentArticle;
+        }
+    }
+
     return nullptr;
 }
 
@@ -571,26 +590,7 @@ void admin::updateExisting(int id, categories* news)
     cout << "Article not found.\n";
 }
 
-article* searchbydate(mostRecent* allNews, int month, int day)
-{
-    // Copying the stack so the original is not changed
-    mostRecent temp = *allNews;
-
-    while (!temp.isEmpty())
-    {
-        article* currentArticle = temp.top();
-        temp.pop();
-
-        if (currentArticle->publish_month == month && currentArticle->publish_day == day)
-        {
-            return currentArticle;
-        }
-    }
-
-    return nullptr;
-}
-
-void displayavragerateforcategory(categories* allCategories, string categoryName)
+void admin ::displayAverageRateForCategory(categories* allCategories, string categoryName)
 {
      int totalRating = 0;
     int articleCount = 0;
