@@ -590,6 +590,78 @@ void admin::updateExisting(int id, categories* news)
     cout << "Article not found.\n";
 }
 
+void user::displayLatestNews(mostRecent* recent)
+{
+    if (recent == nullptr || recent->isEmpty())
+    {
+        cout << "no recent news to display.\n";
+        return;
+    }
+
+    article* temp = recent->head;
+
+    cout << "latest News:\n";
+
+    while (temp != nullptr)
+    {
+        cout << "Title: " << temp->title << endl;
+        cout << "Rating: " << temp->rating << endl; 
+        cout << endl;
+        temp = temp->next;
+    }
+}
+
+void user::rateNews(int id, int rating, categories* news)
+{
+    if (news == nullptr)
+        return;
+
+    newsCategory* cat = news->head;
+
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+
+        while (temp != nullptr)
+        {
+            if (temp->id == id)
+            {
+                temp->rating = rating;
+                cout << "rating updated.\n";
+                return;
+            }
+
+            temp = temp->next;
+        }
+
+        cat = cat->next;
+    }
+
+    cout << "article not found.\n";
+}
+
+
+void user::displayTrendingNews(ratingOrder* ratingQueue)
+{
+    if (ratingQueue == nullptr || ratingQueue->isEmpty())
+    {
+        cout << "No trending articles.\n";
+        return;
+    }
+
+    article* temp = ratingQueue->head;
+
+    cout << "Trending Articles:\n";
+
+    while (temp != nullptr)
+    {
+        cout << "Title: " << temp->title << endl;
+        cout << "Rating: " << temp->rating << endl;
+        cout << endl;
+
+        temp = temp->next;
+    }
+}
 void admin ::displayAverageRateForCategory(categories* allCategories, string categoryName)
 {
      int totalRating = 0;
