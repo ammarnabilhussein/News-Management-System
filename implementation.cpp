@@ -366,7 +366,7 @@ void user ::displayCategoryNews(string categoryName, categories* news){
             << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" << endl
             << "--------------------------------------------------" << endl;
             bookmark(toDisplay);
-            rateNews(toDisplay);
+            rateNews(toDisplay ->id, toDisplay ->rating, news);
             toDisplay = toDisplay ->next;
         }
         
@@ -374,6 +374,78 @@ void user ::displayCategoryNews(string categoryName, categories* news){
         cout << "No such category found." << endl;
     }
     
+}
+
+void user::displayLatestNews(mostRecent* recent)
+{
+    if (recent == nullptr || recent->isEmpty())
+    {
+        cout << "no recent news to display.\n";
+        return;
+    }
+    
+    article* temp = recent->head;
+    
+    cout << "latest News:\n";
+
+    while (temp != nullptr)
+    {
+        cout << "Title: " << temp->title << endl;
+        cout << "Rating: " << temp->rating << endl; 
+        cout << endl;
+        temp = temp->next;
+    }
+}
+
+void user::displayTrendingNews(newsCategory* ratingList)
+{
+    if (ratingList == nullptr || ratingList->isEmpty())
+    {
+        cout << "No trending articles.\n";
+        return;
+    }
+
+    article* temp = ratingList->head;
+
+    cout << "Trending Articles:\n";
+
+    while (temp != nullptr)
+    {
+        cout << "Title: " << temp->title << endl;
+        cout << "Rating: " << temp->rating << endl;
+        cout << endl;
+        
+        temp = temp->next;
+    }
+}
+
+void user::rateNews(int id, int rating, categories* news)
+{
+    if (news == nullptr)
+        return;
+
+    newsCategory* cat = news->head;
+
+    while (cat != nullptr)
+    {
+        article* temp = cat->head;
+
+        while (temp != nullptr)
+        {
+            if (temp->id == id)
+            {
+                temp->rating = rating;
+                cout << "rating updated.\n";
+                return;
+            }
+
+            temp = temp->next;
+        }
+
+        cat = cat->next;
+    }
+
+    cout << "article not found.\n";
 }
 
 void user ::bookmark(article* articleToBookmark){
@@ -590,78 +662,6 @@ void admin::updateExisting(int id, categories* news)
     cout << "Article not found.\n";
 }
 
-void user::displayLatestNews(mostRecent* recent)
-{
-    if (recent == nullptr || recent->isEmpty())
-    {
-        cout << "no recent news to display.\n";
-        return;
-    }
-
-    article* temp = recent->head;
-
-    cout << "latest News:\n";
-
-    while (temp != nullptr)
-    {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl; 
-        cout << endl;
-        temp = temp->next;
-    }
-}
-
-void user::rateNews(int id, int rating, categories* news)
-{
-    if (news == nullptr)
-        return;
-
-    newsCategory* cat = news->head;
-
-    while (cat != nullptr)
-    {
-        article* temp = cat->head;
-
-        while (temp != nullptr)
-        {
-            if (temp->id == id)
-            {
-                temp->rating = rating;
-                cout << "rating updated.\n";
-                return;
-            }
-
-            temp = temp->next;
-        }
-
-        cat = cat->next;
-    }
-
-    cout << "article not found.\n";
-}
-
-
-void user::displayTrendingNews(ratingOrder* ratingQueue)
-{
-    if (ratingQueue == nullptr || ratingQueue->isEmpty())
-    {
-        cout << "No trending articles.\n";
-        return;
-    }
-
-    article* temp = ratingQueue->head;
-
-    cout << "Trending Articles:\n";
-
-    while (temp != nullptr)
-    {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl;
-        cout << endl;
-
-        temp = temp->next;
-    }
-}
 void admin ::displayAverageRateForCategory(categories* allCategories, string categoryName)
 {
      int totalRating = 0;

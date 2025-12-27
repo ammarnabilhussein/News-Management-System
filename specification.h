@@ -86,8 +86,8 @@ class user
         article* searchByKeywords(string words,categories* news);
         void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
-        void displayTrendingNews();
-        void rateNews(article* articleToRate);
+        void displayTrendingNews(newsCategory* ratedNews);
+        void rateNews(int id, int rating, categories* news);
         void bookmark(article* articleToBookmark);
 
 };
