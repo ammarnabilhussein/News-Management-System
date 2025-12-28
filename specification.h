@@ -9,10 +9,11 @@ struct article
     string title, category, description,author;
     int publish_month, publish_day;
     int rating, id;
+    int numberOfSpamReports;
     article* next;
 
     article();
-    article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, article* next = nullptr);
+    article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, int numberOfSpamReports, article* next = nullptr);
 
 };
 
@@ -69,8 +70,10 @@ class user
 {
     private:
         string userName, password, type;
-        article* bookmarkedHead = nullptr;
-        article* bookmarkedTail = nullptr;
+
+        newsCategory* bookmarkedCategory;
+        newsCategory* spamCategory;
+
     public:
         user* next;
         user* prev;
@@ -89,6 +92,7 @@ class user
         void displayTrendingNews(newsCategory* ratedNews);
         void rateNews(int id, int rating, categories* news);
         void bookmark(article* articleToBookmark);
+        void spam(article* articleToAddToSpam);
 
 };
 
