@@ -25,6 +25,7 @@ class commentList
         bool isEmpty();
 };
 
+#include <fstream>
 struct article
 {
     string title, category, description,author;
@@ -135,6 +136,7 @@ class admin : public user
         void updateExisting(int id,categories* news);
         newsCategory* addCategory();
         void displayAverageRateForCategory(categories* allCategories, string categoryName);
+        newsCategory* addCategory(categories* allCategories);
 
 };
 
@@ -152,6 +154,7 @@ class userList
         bool isEmpty();
 };
 
-
+bool saveUsers(user* head);
+bool loadUsers(user*& head);
 
 #endif
