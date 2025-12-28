@@ -2,7 +2,7 @@
 #include "specification.h"
 #include<string>
 using namespace std;
-
+#include <fstream>
 // article implementation
 
 article :: article()
@@ -730,4 +730,46 @@ void admin ::displayAverageRateForCategory(categories* allCategories, string cat
         tempCategory = tempCategory->next;
     }
     cout << "Category " << categoryName << " not found." << endl;
+}
+
+
+newsCategory* admin::addCategory(categories* allCategories)
+{
+    string name;
+    cout << "Enter the name of new category: ";
+    
+    cin >> ws; 
+    getline(cin, name);
+
+    
+    newsCategory* newCat = new newsCategory();
+    newCat->categoryName = name;
+
+    allCategories->addToTail(newCat);
+
+    cout << "Category '" << name << "' created." << endl;
+
+    return newCat;
+}
+
+
+void saveusers(user* head){
+ofstream outfile("users.txt");
+if (!outfile.is_open())
+    {
+        cout << "Error opening file for writing." << endl;
+        return;
+    }
+  user* current = head;
+  while (current != nullptr)
+  {
+    outfile << "Username: " << current->getUserName() << endl;
+    outfile << "Password: " << current->getPassword() << endl;
+    outfile << "Type: " << current->getType() << endl;
+    int isadmin = (current->getType() == "admin") ? 1 : 0;
+    outfile << "IsAdmin: " << isadmin << endl;
+
+    current = current->next;
+  }
+outfile.close();
 }
