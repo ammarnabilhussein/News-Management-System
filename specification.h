@@ -138,6 +138,19 @@ class admin : public user
 
 };
 
+class userList
+{
+    public:
+        int numberOfUsers;
+        user* head;
+        user* tail;
+
+        userList();
+        ~userList();
+        void addToHead(user* newUser);
+        void addToTail(user* newUser);
+        bool isEmpty();
+};
 
 
 

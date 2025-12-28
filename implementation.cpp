@@ -809,3 +809,48 @@ void admin ::displayAverageRateForCategory(categories* allCategories, string cat
     }
     cout << "Category " << categoryName << " not found." << endl;
 }
+
+userList :: userList(){
+    numberOfUsers = 0;
+    head = nullptr;
+    tail = nullptr;
+}
+
+userList :: ~userList(){
+    user* current = head;
+    user* toDelete;
+    while (current != nullptr)
+    {
+        toDelete = current;
+        current = current ->next;
+        delete toDelete;
+    }
+    head = tail = nullptr;
+    numberOfUsers = 0;
+}
+
+void userList ::addToHead(user* newUser){
+    if (isEmpty())
+    {
+        head = tail = newUser;
+    }else{
+        newUser ->next = head;
+        head ->prev = newUser;
+        head = newUser;
+    }
+    numberOfUsers++;
+}
+void userList ::addToTail(user* newUser){
+    if (isEmpty())
+    {
+        head = tail = newUser;
+    }else{
+        tail ->next = newUser;
+        newUser ->prev = tail;
+        tail = newUser;
+    }
+    numberOfUsers++;
+}
+bool userList ::isEmpty(){
+    return numberOfUsers == 0;
+}
