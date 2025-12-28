@@ -4,6 +4,27 @@
 #include <iostream>
 using namespace std;
 
+class comment
+{
+    public:
+        string commenterUserName;
+        string commentText;
+        comment* next;
+        comment();
+        comment(string commenterName, string commentText, comment* next = nullptr);
+};
+
+class commentList
+{
+    public:
+        int numberOfComments;
+        comment* head, *tail;
+        commentList();
+        ~commentList();
+        void addComment(string commenterName, string commentText);
+        bool isEmpty();
+};
+
 struct article
 {
     string title, category, description,author;
@@ -11,6 +32,7 @@ struct article
     int rating, id;
     int numberOfSpamReports;
     article* next;
+    commentList* comments;
 
     article();
     article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, int numberOfSpamReports, article* next = nullptr);
@@ -94,6 +116,7 @@ class user
         void rateNews(article* articleToRate);
         void bookmark(article* articleToBookmark);
         void spam(article* articleToAddToSpam);
+        void addAComment(article* articleToComment);
 
 };
 

@@ -3,7 +3,59 @@
 #include<string>
 using namespace std;
 
-// article implementation
+comment :: comment()
+{
+    commenterUserName = "";
+    commentText = "";
+    next = nullptr;
+}
+
+comment :: comment(string commenterName, string commentText, comment* next)
+{
+    this->commenterUserName = commenterName;
+    this->commentText = commentText;
+    this->next = next;
+}
+
+commentList :: commentList()
+{
+    numberOfComments = 0;
+    head = nullptr;
+    tail = nullptr;
+}
+
+commentList :: ~commentList()
+{
+    comment* current = head;
+    comment* toDelete;
+
+    while (current != nullptr)
+    {
+        toDelete = current;
+        current = current ->next;
+        delete toDelete;
+    }
+    head = tail = nullptr;
+    numberOfComments = 0;
+}
+
+void commentList :: addComment(string commenterName, string commentText)
+{
+    comment* newComment = new comment(commenterName, commentText);
+    if (isEmpty())
+    {
+        head = tail = newComment;
+    }else{
+        tail ->next = newComment;
+        tail = newComment;
+    }
+    numberOfComments++;
+}
+
+bool commentList :: isEmpty()
+{
+    return numberOfComments == 0;
+}
 
 article :: article()
 {
@@ -317,6 +369,7 @@ void user ::displayArticle(article* articleToDisplay)
     bookmark(articleToDisplay);
     rateNews(articleToDisplay);
     spam(articleToDisplay);
+    addAComment(articleToDisplay);
 }
 
 void user::searchByTitle(string title, categories* news)
@@ -516,6 +569,28 @@ void user ::spam(article* articleToSpam){
     {
         spamCategory ->addToTail(articleToSpam);
         articleToSpam ->numberOfSpamReports++;
+    }
+    
+}
+
+void user ::addAComment(article* articleToComment){
+    comment* currentComment = articleToComment ->comments ->head;
+    while (currentComment != nullptr)
+    {
+        cout << "-" << currentComment ->commenterUserName << ": " << currentComment ->commentText << endl;
+        currentComment = currentComment ->next;
+    }
+    char choice;
+    string displayName, commentText;
+    cout << "Do you want to add a comment? (y / n): ";
+    if (choice == 'y')
+    {
+        cout << "Enter your display name: ";
+        cin >> displayName;
+        cout << "Enter your comment: ";
+        cin >> commentText;
+        articleToComment ->comments ->addComment(displayName, commentText);
+        cout << "Comment added successfully." << endl;
     }
     
 }
