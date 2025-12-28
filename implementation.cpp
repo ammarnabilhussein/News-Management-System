@@ -855,7 +855,7 @@ void userList ::addToTail(user* newUser){
 }
 bool userList ::isEmpty(){
     return numberOfUsers == 0;
-
+}
 newsCategory* admin::addCategory(categories* allCategories)
 {
     string name;

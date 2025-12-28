@@ -2,6 +2,7 @@
 #define SPECIFICATION_H
 
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 class comment
@@ -25,7 +26,6 @@ class commentList
         bool isEmpty();
 };
 
-#include <fstream>
 struct article
 {
     string title, category, description,author;
