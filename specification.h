@@ -84,9 +84,10 @@ class user
         string getType();
         string getUserName();
         string getPassword();
-        article* searchByTitle(string title,categories* news);
-        article* searchByDate(mostRecent* allNews, int month, int day);
-        article* searchByKeywords(string words,categories* news);
+        void displayArticle(article* articleToDisplay);
+        void searchByTitle(string title,categories* news);
+        void searchByDate(mostRecent* allNews, int month, int day);
+        void searchByKeywords(string words,categories* news);
         void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews(newsCategory* ratedNews);

@@ -274,6 +274,11 @@ user :: user(string userName, string password , string type, user *next, user *p
     this->prev = prev;
 }
 
+string user :: getType()
+{
+    return type;
+}
+
 string user :: getUserName()
 {
     return userName;
@@ -284,12 +289,37 @@ string user :: getPassword()
     return password;
 }
 
-string user :: getType()
+void user ::displayArticle(article* articleToDisplay)
 {
-    return type;
+    article* current = spamCategory ->head;
+    while (current != nullptr)
+    {
+        if (articleToDisplay ->id == current ->id)
+        {
+            return;
+        }
+        current = current ->next;
+    }
+
+    if (articleToDisplay ->rating < 2)
+    {
+        return;
+    }
+
+    cout << "\t\t\t\t" << articleToDisplay->title << endl
+    << "\t\t\t\t" << articleToDisplay->description << endl
+    << "By " << articleToDisplay->author << " | " 
+    << articleToDisplay->publish_month << "/" << articleToDisplay->publish_day 
+    << " | " << articleToDisplay->rating << "/10" 
+    << " | " << articleToDisplay->numberOfSpamReports << " Spam Reports" << endl
+    << "--------------------------------------------------" << endl;
+
+    bookmark(articleToDisplay);
+    rateNews(articleToDisplay->id, articleToDisplay->rating, nullptr);
+    spam(articleToDisplay);
 }
 
-article* user::searchByTitle(string title, categories* news)
+void user::searchByTitle(string title, categories* news)
 {
     newsCategory* cat = news->head;
     
@@ -298,17 +328,15 @@ article* user::searchByTitle(string title, categories* news)
         article* temp = cat->head;
         while (temp != nullptr)
         {
-            if (temp->title == title)
-            return temp;
-            
+            displayArticle(temp);   
             temp = temp->next;
         }
         cat = cat->next;
     }
-    return nullptr;
+
 }
 
-article* user ::searchByDate(mostRecent* allNews, int month, int day)
+void user ::searchByDate(mostRecent* allNews, int month, int day)
 {
     // Copying the stack so the original is not changed
     mostRecent temp = *allNews;
@@ -320,14 +348,13 @@ article* user ::searchByDate(mostRecent* allNews, int month, int day)
 
         if (currentArticle->publish_month == month && currentArticle->publish_day == day)
         {
-            return currentArticle;
+            displayArticle(currentArticle);
         }
     }
 
-    return nullptr;
 }
 
-article* user::searchByKeywords(string words, categories* news)
+void user::searchByKeywords(string words, categories* news)
 {
     newsCategory* cat = news->head;
 
@@ -336,16 +363,33 @@ article* user::searchByKeywords(string words, categories* news)
         article* temp = cat->head;
         while (temp != nullptr)
         {
-            if (temp->title.find(words) != string::npos ||
-                temp->description.find(words) != string::npos)
+            string word = "";
+            bool found = false;
+            for (int i = 0; i < temp ->description.size(); i++)
             {
-                return temp;
+                if (temp ->description[i] != ' ')
+                {
+                    word += temp ->description[i];
+                }else{
+                    if (word == words)
+                    {
+                        found = true;
+                        break;
+                    }
+                    word = "";
+                }
+            }
+            
+            if (found)
+            {
+                displayArticle(temp);
+                temp = temp ->next;
             }
             temp = temp->next;
         }
         cat = cat->next;
     }
-    return nullptr;
+    
 }
 
 void user ::displayCategoryNews(string categoryName, categories* news){
@@ -363,29 +407,7 @@ void user ::displayCategoryNews(string categoryName, categories* news){
         article* toDisplay = temp ->head;
         while (toDisplay != nullptr)
         {
-            article* temp = spamCategory ->head;
-            while (temp != nullptr)
-            {
-                if (toDisplay ->id == temp ->id)
-                {
-                    toDisplay = toDisplay ->next;
-                    continue;
-                }
-                temp = temp ->next;
-            }
-            
-            if (toDisplay ->rating < 2)
-            {
-                continue;
-            }
-            
-            cout << "\t\t\t\t" << toDisplay ->title << endl
-            << "\t\t\t\t" << toDisplay ->description << endl
-            << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" 
-            << " | " << toDisplay ->numberOfSpamReports << " Spam Reports" << endl
-            << "--------------------------------------------------" << endl;
-            bookmark(toDisplay);
-            rateNews(toDisplay ->id, toDisplay ->rating, news);
+            displayArticle(toDisplay);
             toDisplay = toDisplay ->next;
         }
         
@@ -409,9 +431,7 @@ void user::displayLatestNews(mostRecent* recent)
 
     while (temp != nullptr)
     {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl; 
-        cout << endl;
+        displayArticle(temp);
         temp = temp->next;
     }
 }
@@ -430,10 +450,7 @@ void user::displayTrendingNews(newsCategory* ratingList)
 
     while (temp != nullptr)
     {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl;
-        cout << endl;
-        
+        displayArticle(temp);
         temp = temp->next;
     }
 }
