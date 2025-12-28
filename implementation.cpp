@@ -2,6 +2,60 @@
 #include "specification.h"
 #include<string>
 using namespace std;
+
+comment :: comment()
+{
+    commenterUserName = "";
+    commentText = "";
+    next = nullptr;
+}
+
+comment :: comment(string commenterName, string commentText, comment* next)
+{
+    this->commenterUserName = commenterName;
+    this->commentText = commentText;
+    this->next = next;
+}
+
+commentList :: commentList()
+{
+    numberOfComments = 0;
+    head = nullptr;
+    tail = nullptr;
+}
+
+commentList :: ~commentList()
+{
+    comment* current = head;
+    comment* toDelete;
+
+    while (current != nullptr)
+    {
+        toDelete = current;
+        current = current ->next;
+        delete toDelete;
+    }
+    head = tail = nullptr;
+    numberOfComments = 0;
+}
+
+void commentList :: addComment(string commenterName, string commentText)
+{
+    comment* newComment = new comment(commenterName, commentText);
+    if (isEmpty())
+    {
+        head = tail = newComment;
+    }else{
+        tail ->next = newComment;
+        tail = newComment;
+    }
+    numberOfComments++;
+}
+
+bool commentList :: isEmpty()
+{
+    return numberOfComments == 0;
+}
 #include <fstream>
 // article implementation
 
@@ -274,6 +328,11 @@ user :: user(string userName, string password , string type, user *next, user *p
     this->prev = prev;
 }
 
+string user :: getType()
+{
+    return type;
+}
+
 string user :: getUserName()
 {
     return userName;
@@ -284,12 +343,38 @@ string user :: getPassword()
     return password;
 }
 
-string user :: getType()
+void user ::displayArticle(article* articleToDisplay)
 {
-    return type;
+    article* current = spamCategory ->head;
+    while (current != nullptr)
+    {
+        if (articleToDisplay ->id == current ->id)
+        {
+            return;
+        }
+        current = current ->next;
+    }
+
+    if (articleToDisplay ->rating < 2)
+    {
+        return;
+    }
+
+    cout << "\t\t\t\t" << articleToDisplay->title << endl
+    << "\t\t\t\t" << articleToDisplay->description << endl
+    << "By " << articleToDisplay->author << " | " 
+    << articleToDisplay->publish_month << "/" << articleToDisplay->publish_day 
+    << " | " << articleToDisplay->rating << "/10" 
+    << " | " << articleToDisplay->numberOfSpamReports << " Spam Reports" << endl
+    << "--------------------------------------------------" << endl;
+
+    bookmark(articleToDisplay);
+    rateNews(articleToDisplay);
+    spam(articleToDisplay);
+    addAComment(articleToDisplay);
 }
 
-article* user::searchByTitle(string title, categories* news)
+void user::searchByTitle(string title, categories* news)
 {
     newsCategory* cat = news->head;
     
@@ -298,17 +383,15 @@ article* user::searchByTitle(string title, categories* news)
         article* temp = cat->head;
         while (temp != nullptr)
         {
-            if (temp->title == title)
-            return temp;
-            
+            displayArticle(temp);   
             temp = temp->next;
         }
         cat = cat->next;
     }
-    return nullptr;
+
 }
 
-article* user ::searchByDate(mostRecent* allNews, int month, int day)
+void user ::searchByDate(mostRecent* allNews, int month, int day)
 {
     // Copying the stack so the original is not changed
     mostRecent temp = *allNews;
@@ -320,14 +403,13 @@ article* user ::searchByDate(mostRecent* allNews, int month, int day)
 
         if (currentArticle->publish_month == month && currentArticle->publish_day == day)
         {
-            return currentArticle;
+            displayArticle(currentArticle);
         }
     }
 
-    return nullptr;
 }
 
-article* user::searchByKeywords(string words, categories* news)
+void user::searchByKeywords(string words, categories* news)
 {
     newsCategory* cat = news->head;
 
@@ -336,16 +418,33 @@ article* user::searchByKeywords(string words, categories* news)
         article* temp = cat->head;
         while (temp != nullptr)
         {
-            if (temp->title.find(words) != string::npos ||
-                temp->description.find(words) != string::npos)
+            string word = "";
+            bool found = false;
+            for (int i = 0; i < temp ->description.size(); i++)
             {
-                return temp;
+                if (temp ->description[i] != ' ')
+                {
+                    word += temp ->description[i];
+                }else{
+                    if (word == words)
+                    {
+                        found = true;
+                        break;
+                    }
+                    word = "";
+                }
+            }
+            
+            if (found)
+            {
+                displayArticle(temp);
+                temp = temp ->next;
             }
             temp = temp->next;
         }
         cat = cat->next;
     }
-    return nullptr;
+    
 }
 
 void user ::displayCategoryNews(string categoryName, categories* news){
@@ -363,29 +462,7 @@ void user ::displayCategoryNews(string categoryName, categories* news){
         article* toDisplay = temp ->head;
         while (toDisplay != nullptr)
         {
-            article* temp = spamCategory ->head;
-            while (temp != nullptr)
-            {
-                if (toDisplay ->id == temp ->id)
-                {
-                    toDisplay = toDisplay ->next;
-                    continue;
-                }
-                temp = temp ->next;
-            }
-            
-            if (toDisplay ->rating < 2)
-            {
-                continue;
-            }
-            
-            cout << "\t\t\t\t" << toDisplay ->title << endl
-            << "\t\t\t\t" << toDisplay ->description << endl
-            << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" 
-            << " | " << toDisplay ->numberOfSpamReports << " Spam Reports" << endl
-            << "--------------------------------------------------" << endl;
-            bookmark(toDisplay);
-            rateNews(toDisplay ->id, toDisplay ->rating, news);
+            displayArticle(toDisplay);
             toDisplay = toDisplay ->next;
         }
         
@@ -409,9 +486,7 @@ void user::displayLatestNews(mostRecent* recent)
 
     while (temp != nullptr)
     {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl; 
-        cout << endl;
+        displayArticle(temp);
         temp = temp->next;
     }
 }
@@ -430,41 +505,24 @@ void user::displayTrendingNews(newsCategory* ratingList)
 
     while (temp != nullptr)
     {
-        cout << "Title: " << temp->title << endl;
-        cout << "Rating: " << temp->rating << endl;
-        cout << endl;
-        
+        displayArticle(temp);
         temp = temp->next;
     }
 }
 
-void user::rateNews(int id, int rating, categories* news)
+void user::rateNews(article* toRate)
 {
-    if (news == nullptr)
-        return;
-
-    newsCategory* cat = news->head;
-
-    while (cat != nullptr)
-    {
-        article* temp = cat->head;
-
-        while (temp != nullptr)
-        {
-            if (temp->id == id)
-            {
-                temp->rating = rating;
-                cout << "rating updated.\n";
-                return;
-            }
-
-            temp = temp->next;
-        }
-
-        cat = cat->next;
+    char choice;
+    int userRating;
+    cout << "Do you want to rate this article? (y / n): ";
+    cin >> choice;
+    if (choice == 'y'){
+        cout << "Enter your rating (1-10): ";
+        cin >> userRating;
+        
+        toRate->rating = (toRate->rating + userRating) / 2;
+        cout << "Thank you for rating!" << endl;
     }
-
-    cout << "article not found.\n";
 }
 
 void user ::bookmark(article* articleToBookmark){
@@ -513,6 +571,28 @@ void user ::spam(article* articleToSpam){
     {
         spamCategory ->addToTail(articleToSpam);
         articleToSpam ->numberOfSpamReports++;
+    }
+    
+}
+
+void user ::addAComment(article* articleToComment){
+    comment* currentComment = articleToComment ->comments ->head;
+    while (currentComment != nullptr)
+    {
+        cout << "-" << currentComment ->commenterUserName << ": " << currentComment ->commentText << endl;
+        currentComment = currentComment ->next;
+    }
+    char choice;
+    string displayName, commentText;
+    cout << "Do you want to add a comment? (y / n): ";
+    if (choice == 'y')
+    {
+        cout << "Enter your display name: ";
+        cin >> displayName;
+        cout << "Enter your comment: ";
+        cin >> commentText;
+        articleToComment ->comments ->addComment(displayName, commentText);
+        cout << "Comment added successfully." << endl;
     }
     
 }
@@ -732,6 +812,49 @@ void admin ::displayAverageRateForCategory(categories* allCategories, string cat
     cout << "Category " << categoryName << " not found." << endl;
 }
 
+userList :: userList(){
+    numberOfUsers = 0;
+    head = nullptr;
+    tail = nullptr;
+}
+
+userList :: ~userList(){
+    user* current = head;
+    user* toDelete;
+    while (current != nullptr)
+    {
+        toDelete = current;
+        current = current ->next;
+        delete toDelete;
+    }
+    head = tail = nullptr;
+    numberOfUsers = 0;
+}
+
+void userList ::addToHead(user* newUser){
+    if (isEmpty())
+    {
+        head = tail = newUser;
+    }else{
+        newUser ->next = head;
+        head ->prev = newUser;
+        head = newUser;
+    }
+    numberOfUsers++;
+}
+void userList ::addToTail(user* newUser){
+    if (isEmpty())
+    {
+        head = tail = newUser;
+    }else{
+        tail ->next = newUser;
+        newUser ->prev = tail;
+        tail = newUser;
+    }
+    numberOfUsers++;
+}
+bool userList ::isEmpty(){
+    return numberOfUsers == 0;
 
 newsCategory* admin::addCategory(categories* allCategories)
 {

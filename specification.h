@@ -3,6 +3,28 @@
 
 #include <iostream>
 using namespace std;
+
+class comment
+{
+    public:
+        string commenterUserName;
+        string commentText;
+        comment* next;
+        comment();
+        comment(string commenterName, string commentText, comment* next = nullptr);
+};
+
+class commentList
+{
+    public:
+        int numberOfComments;
+        comment* head, *tail;
+        commentList();
+        ~commentList();
+        void addComment(string commenterName, string commentText);
+        bool isEmpty();
+};
+
 #include <fstream>
 struct article
 {
@@ -11,6 +33,7 @@ struct article
     int rating, id;
     int numberOfSpamReports;
     article* next;
+    commentList* comments;
 
     article();
     article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, int numberOfSpamReports, article* next = nullptr);
@@ -84,15 +107,17 @@ class user
         string getType();
         string getUserName();
         string getPassword();
-        article* searchByTitle(string title,categories* news);
-        article* searchByDate(mostRecent* allNews, int month, int day);
-        article* searchByKeywords(string words,categories* news);
+        void displayArticle(article* articleToDisplay);
+        void searchByTitle(string title,categories* news);
+        void searchByDate(mostRecent* allNews, int month, int day);
+        void searchByKeywords(string words,categories* news);
         void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews(newsCategory* ratedNews);
-        void rateNews(int id, int rating, categories* news);
+        void rateNews(article* articleToRate);
         void bookmark(article* articleToBookmark);
         void spam(article* articleToAddToSpam);
+        void addAComment(article* articleToComment);
 
 };
 
@@ -115,6 +140,19 @@ class admin : public user
 
 };
 
+class userList
+{
+    public:
+        int numberOfUsers;
+        user* head;
+        user* tail;
+
+        userList();
+        ~userList();
+        void addToHead(user* newUser);
+        void addToTail(user* newUser);
+        bool isEmpty();
+};
 
 bool saveUsers(user* head);
 bool loadUsers(user*& head);
