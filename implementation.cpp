@@ -14,10 +14,11 @@ article :: article()
     publish_day = 0;
     rating = 0;
     id = 0;
+    numberOfSpamReports = 0;
     next = nullptr;
 }
 
-article :: article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, article* next)
+article :: article(string title, string category, string description, string author,int publish_month, int publish_day, int rating, int id, int numberOfSpamReports, article* next)
 {
     this->title = title;
     this->category = category;
@@ -28,6 +29,7 @@ article :: article(string title, string category, string description, string aut
     this->rating = rating;
     this->id = id;
     this->next = next;
+    this->numberOfSpamReports = numberOfSpamReports;
 }
 
 newsCategory :: newsCategory()
@@ -361,9 +363,26 @@ void user ::displayCategoryNews(string categoryName, categories* news){
         article* toDisplay = temp ->head;
         while (toDisplay != nullptr)
         {
+            article* temp = spamCategory ->head;
+            while (temp != nullptr)
+            {
+                if (toDisplay ->id == temp ->id)
+                {
+                    toDisplay = toDisplay ->next;
+                    continue;
+                }
+                temp = temp ->next;
+            }
+            
+            if (toDisplay ->rating < 2)
+            {
+                continue;
+            }
+            
             cout << "\t\t\t\t" << toDisplay ->title << endl
             << "\t\t\t\t" << toDisplay ->description << endl
-            << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" << endl
+            << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" 
+            << " | " << toDisplay ->numberOfSpamReports << " Spam Reports" << endl
             << "--------------------------------------------------" << endl;
             bookmark(toDisplay);
             rateNews(toDisplay ->id, toDisplay ->rating, news);
@@ -450,23 +469,27 @@ void user::rateNews(int id, int rating, categories* news)
 
 void user ::bookmark(article* articleToBookmark){
     char choice;
-    if (bookmarkedHead == nullptr)
-    {
+    if(bookmarkedCategory ->isEmpty()){
         cout << "Do you want to bookmark this article? (y / n): ";
         cin >> choice;
         if (choice == 'y')
         {
-            bookmarkedHead = articleToBookmark;
-            bookmarkedTail = articleToBookmark;
+            bookmarkedCategory ->addToHead(articleToBookmark);
             cout << "Article bookmarked successfully." << endl;
         }
-        
     }else{
-        article* temp = bookmarkedHead;
+        article* temp = bookmarkedCategory ->head;
         while (temp != nullptr){
             if (temp ->id == articleToBookmark ->id)
             {
-                cout << "Article already bookmarked." << endl;
+                cout << "Article is bookmarked, do you want to remove it from bookmarks?" << endl;
+                cout << "Enter choice (y / n): ";
+                cin >> choice;
+                if (choice == 'y')
+                {
+                    bookmarkedCategory ->removefromMid(articleToBookmark ->id);
+                    cout << "Article removed from bookmarks." << endl;
+                }
                 return;
             }
             temp = temp ->next;
@@ -475,12 +498,23 @@ void user ::bookmark(article* articleToBookmark){
         cin >> choice;
         if (choice == 'y')
         {
-            bookmarkedTail ->next = articleToBookmark;
-            bookmarkedTail = articleToBookmark;
+            bookmarkedCategory ->addToTail(articleToBookmark);
             cout << "Article bookmarked successfully." << endl;    
         }
-        
     }
+
+}
+
+void user ::spam(article* articleToSpam){
+    char choice;
+    cout << "Do you want to report the article as spam?" << endl;
+    cin >> choice;
+    if (choice == 'y')
+    {
+        spamCategory ->addToTail(articleToSpam);
+        articleToSpam ->numberOfSpamReports++;
+    }
+    
 }
 
 admin :: admin()
@@ -513,7 +547,7 @@ void admin ::addArticle(categories* news, mostRecent* recentNews, newsCategory* 
     cout << "Enter publish month and day: ";
     cin >> publish_month >> publish_day;
 
-    article* newArticle = new article(title, category, description, author, publish_month, publish_day, 0, idGenerator());
+    article* newArticle = new article(title, category, description, author, publish_month, publish_day, 0, 0, idGenerator());
     newsCategory* temp = news ->head;
     while (temp != nullptr)
     {
