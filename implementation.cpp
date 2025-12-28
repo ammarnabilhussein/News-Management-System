@@ -366,7 +366,7 @@ void user ::displayCategoryNews(string categoryName, categories* news){
             << "By" << toDisplay ->author << " | " << toDisplay ->publish_month << "/" << toDisplay ->publish_day << " | " << toDisplay ->rating << "/10" << endl
             << "--------------------------------------------------" << endl;
             bookmark(toDisplay);
-            rateNews(toDisplay);
+            rateNews(toDisplay ->id, toDisplay ->rating, news);
             toDisplay = toDisplay ->next;
         }
         
@@ -641,7 +641,7 @@ void user::rateNews(int id, int rating, categories* news)
 }
 
 
-void user::displayTrendingNews(ratingOrder* ratingQueue)
+void user::displayTrendingNews(newsCategory* ratingQueue)
 {
     if (ratingQueue == nullptr || ratingQueue->isEmpty())
     {
