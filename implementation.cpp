@@ -315,7 +315,7 @@ void user ::displayArticle(article* articleToDisplay)
     << "--------------------------------------------------" << endl;
 
     bookmark(articleToDisplay);
-    rateNews(articleToDisplay->id, articleToDisplay->rating, nullptr);
+    rateNews(articleToDisplay);
     spam(articleToDisplay);
 }
 
@@ -455,33 +455,19 @@ void user::displayTrendingNews(newsCategory* ratingList)
     }
 }
 
-void user::rateNews(int id, int rating, categories* news)
+void user::rateNews(article* toRate)
 {
-    if (news == nullptr)
-        return;
-
-    newsCategory* cat = news->head;
-
-    while (cat != nullptr)
-    {
-        article* temp = cat->head;
-
-        while (temp != nullptr)
-        {
-            if (temp->id == id)
-            {
-                temp->rating = rating;
-                cout << "rating updated.\n";
-                return;
-            }
-
-            temp = temp->next;
-        }
-
-        cat = cat->next;
+    char choice;
+    int userRating;
+    cout << "Do you want to rate this article? (y / n): ";
+    cin >> choice;
+    if (choice == 'y'){
+        cout << "Enter your rating (1-10): ";
+        cin >> userRating;
+        
+        toRate->rating = (toRate->rating + userRating) / 2;
+        cout << "Thank you for rating!" << endl;
     }
-
-    cout << "article not found.\n";
 }
 
 void user ::bookmark(article* articleToBookmark){

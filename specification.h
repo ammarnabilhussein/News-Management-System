@@ -91,7 +91,7 @@ class user
         void displayCategoryNews(string categoryName, categories* allnews);
         void displayLatestNews(mostRecent* allNews);
         void displayTrendingNews(newsCategory* ratedNews);
-        void rateNews(int id, int rating, categories* news);
+        void rateNews(article* articleToRate);
         void bookmark(article* articleToBookmark);
         void spam(article* articleToAddToSpam);
 
