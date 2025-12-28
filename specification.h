@@ -134,7 +134,6 @@ class admin : public user
         void addArticle(categories* news, mostRecent* recentNews, newsCategory* ratedNews);
         void removeArticle(int id,categories* news, mostRecent* recentNews, newsCategory* ratedNews);
         void updateExisting(int id,categories* news);
-        newsCategory* addCategory();
         void displayAverageRateForCategory(categories* allCategories, string categoryName);
         newsCategory* addCategory(categories* allCategories);
 

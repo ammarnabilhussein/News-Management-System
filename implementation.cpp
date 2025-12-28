@@ -640,7 +640,7 @@ void admin ::addArticle(categories* news, mostRecent* recentNews, newsCategory* 
     }
     if (temp == nullptr)
     {
-        newsCategory* newcat = addCategory();
+        newsCategory* newcat = addCategory(news);
         newcat ->addToTail(newArticle);
     }else{
         temp ->addToTail(newArticle);
