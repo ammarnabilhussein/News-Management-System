@@ -1,8 +1,12 @@
 #include <iostream>
 #include "Specification.h"
+#include <fstream>
 using namespace std;
 
 user* login(user* head);
+user* signup(user* head);
+bool saveUsers(user* head);
+bool loadUsers(user*& head);
 
 int main()
 {   
@@ -10,6 +14,7 @@ int main()
     mostRecent recentNews;
     newsCategory ratedNews;
     userList users;
+    news.loadCategories("categories.txt");
 
     while (true)
     {
@@ -121,8 +126,8 @@ int main()
         }
         else if (choice == 2)
         {
-            user* temp = users.head;
-            user *newUser = signup(temp);
+            user *newUser = signup(users.head);
+            saveUsers(newUser);
         }
         else if (choice == 3)
         {
@@ -181,4 +186,43 @@ user* signup(user* head)
     temp->next = newUser;
     newUser->prev = temp;
     return head;
+}
+
+bool saveUsers(user* head) {
+    ofstream outfile("Users.txt");
+    if (!outfile.is_open()) {
+        cout << "Error opening Users.txt for writing." << endl;
+        return false;
+    }
+    user* current = head;
+    while (current != nullptr) {
+        outfile << current->getUserName() << " " << current->getPassword() << " " << current->getType() << endl;
+        current = current->next;
+    }
+    outfile.close();
+    return true;
+}
+
+bool loadUsers(user*& head) {
+    ifstream infile("Users.txt");
+    if (!infile.is_open()) {
+        cout << "Error opening Users.txt for reading." << endl;
+        return false;
+    }
+    head = nullptr;
+    user* tail = nullptr;
+    string uname, pass, type;
+    while (infile >> uname >> pass >> type) {
+        user* newUser = new user(uname, pass, type, nullptr, nullptr);
+        if (head == nullptr) {
+            head = newUser;
+            tail = newUser;
+        } else {
+            tail->next = newUser;
+            newUser->prev = tail;
+            tail = newUser;
+        }
+    }
+    infile.close();
+    return true;
 }

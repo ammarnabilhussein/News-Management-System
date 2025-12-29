@@ -72,6 +72,8 @@ class categories
         void addToHead(newsCategory*);
         void addToTail(newsCategory*);
         bool isEmpty();
+        void loadCategories(const string& filename);
+        void saveCategories(const string& filename);
 };
 
 
@@ -118,6 +120,8 @@ class user
         void bookmark(article* articleToBookmark);
         void spam(article* articleToAddToSpam);
         void addAComment(article* articleToComment);
+        static bool saveUsers(user* head);
+        static user* loadUsers(user*& head,categories* allNews);
 
 };
 
@@ -153,7 +157,6 @@ class userList
         bool isEmpty();
 };
 
-bool saveUsers(user* head);
-bool loadUsers(user*& head);
+
 
 #endif

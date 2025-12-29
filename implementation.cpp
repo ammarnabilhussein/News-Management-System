@@ -1,6 +1,7 @@
 #include <iostream>
 #include "specification.h"
 #include<string>
+#include <fstream>
 using namespace std;
 
 comment :: comment()
@@ -56,8 +57,6 @@ bool commentList :: isEmpty()
 {
     return numberOfComments == 0;
 }
-#include <fstream>
-// article implementation
 
 article :: article()
 {
@@ -895,4 +894,276 @@ if (!outfile.is_open())
     current = current->next;
   }
 outfile.close();
+}
+
+article* findArticleById(categories* news, int id) {
+    if (!news || !news->head) return nullptr;
+    newsCategory* cat = news->head;
+    while (cat != nullptr) {
+        article* art = cat->head;
+        while (art != nullptr) {
+            if (art->id == id) return art;
+            art = art->next;
+        }
+        cat = cat->next;
+    }
+    return nullptr;
+}
+
+user* user::loadUsers(user *&head, categories* allNews) {
+    ifstream inFile("users.txt");
+    if (!inFile.is_open()) return nullptr;
+
+    head = nullptr;
+    user* tail = nullptr;
+    string line;
+
+    while (getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        string username, password, type;
+        
+        
+        size_t pos = line.find(":");
+        username = line.substr(pos + 1);
+
+       
+        getline(inFile, line);
+        pos = line.find(":");
+        password = line.substr(pos + 1);
+
+      
+        getline(inFile, line);
+        pos = line.find(":");
+        type = line.substr(pos + 1);
+
+        
+        getline(inFile, line);
+        
+      
+        user* newUser = nullptr;
+        if (type == "admin") {
+            newUser = new admin(username, password, type, nullptr, nullptr);
+        } else {
+            newUser = new user(username, password, type, nullptr, nullptr);
+        }
+
+        
+        getline(inFile, line); 
+        pos = line.find(":");
+        string bookmarksStr = line.substr(pos + 1);
+        
+        
+        size_t currentIdx = 0;
+        while (currentIdx < bookmarksStr.length()) {
+            
+            size_t nextSpace = bookmarksStr.find(' ', currentIdx);
+            
+            
+            if (nextSpace == string::npos) {
+                nextSpace = bookmarksStr.length();
+            }
+
+            
+            if (nextSpace > currentIdx) {
+                string numStr = bookmarksStr.substr(currentIdx, nextSpace - currentIdx);
+             
+                try {
+                    int artId = stoi(numStr);
+                    if (artId == -1) break; 
+
+                    article* art = findArticleById(allNews, artId);
+                    if (art) {
+                        newUser->bookmarkedCategory->addToTail(art);
+                    }
+                } catch (...) {
+                   
+                }
+            }
+            
+            currentIdx = nextSpace + 1;
+        }
+
+       
+        getline(inFile, line);
+        pos = line.find(":");
+        string spamStr = line.substr(pos + 1);
+        
+        currentIdx = 0;
+        while (currentIdx < spamStr.length()) {
+            size_t nextSpace = spamStr.find(' ', currentIdx);
+            
+            if (nextSpace == string::npos) {
+                nextSpace = spamStr.length();
+            }
+
+            if (nextSpace > currentIdx) {
+                string numStr = spamStr.substr(currentIdx, nextSpace - currentIdx);
+                try {
+                    int artId = stoi(numStr);
+                    if (artId == -1) break;
+
+                    article* art = findArticleById(allNews, artId);
+                    if (art) {
+                        newUser->spamCategory->addToTail(art);
+                    }
+                } catch (...) {}
+            }
+            currentIdx = nextSpace + 1;
+        }
+
+        if (head == nullptr) {
+            head = newUser;
+            tail = newUser;
+        } else {
+            tail->next = newUser;
+            newUser->prev = tail;
+            tail = newUser;
+        }
+    }
+
+    inFile.close();
+    return head;
+}
+
+bool user::saveUsers(user* head) {
+    ofstream outFile("users.txt");
+    if (!outFile.is_open()) return false;
+
+    user* cur = head;
+    while (cur != nullptr) {
+        outFile << "Username:" << cur->getUserName() << '\n';
+        outFile << "Password:" << cur->getPassword() << '\n';
+        outFile << "Type:" << cur->getType() << '\n';
+        outFile << '\n';
+
+        outFile << "Bookmarks: ";
+        if (cur->bookmarkedCategory != nullptr) {
+            article* a = cur->bookmarkedCategory->head;
+            while (a != nullptr) {
+                outFile << a->id << " ";
+                a = a->next;
+            }
+        }
+        outFile << "-1\n";
+
+        outFile << "Spam: ";
+        if (cur->spamCategory != nullptr) {
+            article* a = cur->spamCategory->head;
+            while (a != nullptr) {
+                outFile << a->id << " ";
+                a = a->next;
+            }
+        }
+        outFile << "-1\n";
+
+        cur = cur->next;
+    }
+
+    outFile.close();
+    return true;
+}
+
+void categories::saveCategories(const string& filename)
+{
+    ofstream outFile(filename);
+    if (!outFile.is_open()) {
+        cout << "Error: Could not open file " << filename << " for writing." << endl;
+        return;
+    }
+
+    newsCategory* currentCat = head;
+    while (currentCat != nullptr)
+    {
+        
+        outFile << "---CATEGORY---" << endl;
+        outFile << currentCat->categoryName << endl;
+
+        article* currentArt = currentCat->head;
+        while (currentArt != nullptr)
+        {
+            
+            outFile << "---ARTICLE---" << endl;
+            outFile << currentArt->id << endl;
+            outFile << currentArt->title << endl;
+            outFile << currentArt->category << endl;
+            outFile << currentArt->description << endl;
+            outFile << currentArt->author << endl;
+            outFile << currentArt->publish_month << endl;
+            outFile << currentArt->publish_day << endl;
+            outFile << currentArt->rating << endl;
+            outFile << currentArt->numberOfSpamReports << endl;
+            
+            currentArt = currentArt->next;
+        }
+        currentCat = currentCat->next;
+    }
+
+    outFile.close();
+    cout << "Categories and articles saved successfully." << endl;
+}
+
+
+void categories:: loadCategories(const string& filename)
+{
+    ifstream inFile(filename);
+    if (!inFile.is_open()) {
+        cout << "Warning: Could not open file " << filename << " (This is normal on first run)." << endl;
+        return;
+    }
+
+    string line;
+    newsCategory* currentCat = nullptr;
+
+    while (getline(inFile, line))
+    {
+        if (line == "---CATEGORY---")
+        {
+            string catName;
+            getline(inFile, catName);
+
+          
+            newsCategory* newCat = new newsCategory();
+            newCat->categoryName = catName;
+            this->addToTail(newCat);
+            
+            
+            currentCat = newCat; 
+        }
+        else if (line == "---ARTICLE---")
+        {
+            if (currentCat == nullptr) continue; 
+
+            string idStr, title, category, desc, author, monthStr, dayStr, ratingStr, spamStr;
+
+            
+            getline(inFile, idStr);
+            getline(inFile, title);
+            getline(inFile, category);
+            getline(inFile, desc);
+            getline(inFile, author);
+            getline(inFile, monthStr);
+            getline(inFile, dayStr);
+            getline(inFile, ratingStr);
+            getline(inFile, spamStr);
+
+            int id = stoi(idStr);
+            int month = stoi(monthStr);
+            int day = stoi(dayStr);
+            int rating = stoi(ratingStr);
+            int spam = stoi(spamStr);
+
+           
+            article* newArticle = new article(title, category, desc, author, month, day, rating, id, spam, nullptr);
+            
+           
+            newArticle->comments = new commentList();
+
+           
+            currentCat->addToTail(newArticle);
+        }
+    }
+
+    inFile.close();
+    cout << "Categories loaded successfully." << endl;
 }
