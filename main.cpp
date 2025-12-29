@@ -15,6 +15,7 @@ int main()
     newsCategory ratedNews;
     userList users;
     news.loadCategories("categories.txt");
+    loadUsers(users.head);
 
     while (true)
     {
@@ -131,8 +132,8 @@ int main()
         }
         else if (choice == 2)
         {
-            user *newUser = signup(users.head);
-            saveUsers(newUser);
+            users.head = signup(users.head);
+            saveUsers(users.head);
         }
         else if (choice == 3)
         {
