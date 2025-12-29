@@ -181,7 +181,7 @@ bool newsCategory ::removefromMid(int id){
     }
     if (head ->id == id)
     {
-        removeFromHead();
+        return removeFromHead();
     }else{
         article* toDelete = head;
         article* previous;
@@ -1064,7 +1064,7 @@ bool user::saveUsers(user* head) {
     return true;
 }
 
-void categories::saveCategories(const string& filename)
+void categories::saveCategories(string filename)
 {
     ofstream outFile(filename);
     if (!outFile.is_open()) {
@@ -1104,7 +1104,7 @@ void categories::saveCategories(const string& filename)
 }
 
 
-void categories:: loadCategories(const string& filename)
+void categories:: loadCategories(string filename)
 {
     ifstream inFile(filename);
     if (!inFile.is_open()) {

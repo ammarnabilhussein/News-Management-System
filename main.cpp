@@ -96,6 +96,7 @@ int main()
                             break;
                         }
                         case 5:
+                        {
                             char logout;
                             loggedInUser->displayLatestNews(&recentNews);
                             cout << "do you want to logout? (y/n): ";
@@ -105,7 +106,9 @@ int main()
                                 userChoice = 7;
                             }
                             break;
+                        }
                         case 6:
+                        {
                             char logout;
                             loggedInUser->displayTrendingNews(&ratedNews);
                             cout << "do you want to logout? (y/n): ";
@@ -115,6 +118,8 @@ int main()
                                 userChoice = 7;
                             }
                             break;
+                        }
+                            
                         case 7:
                             break;
                         default:

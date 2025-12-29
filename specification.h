@@ -72,8 +72,8 @@ class categories
         void addToHead(newsCategory*);
         void addToTail(newsCategory*);
         bool isEmpty();
-        void loadCategories(const string& filename);
-        void saveCategories(const string& filename);
+        void loadCategories(string filename);
+        void saveCategories(string filename);
 };
 
 
